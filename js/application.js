@@ -45,7 +45,8 @@ var Corner = function(venueObject, map) {
 
   // load metadata
   self.id = venueObject.id;
-  self.name = ko.observable(venueObject.name.titleize());
+  // self.name = ko.observable(venueObject.name.titleize());
+  self.name = ko.observable(venueObject.name);
   self.address = ko.observable(venueObject.address_1);
 
   // initialize empty meetup

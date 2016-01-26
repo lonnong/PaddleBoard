@@ -14,31 +14,33 @@ html, body, .cover {
 }
 
 /* side bar */
-header, aside {
+layer, menu {
   background: blue;
   color: white;
   margin: 0;
   padding: 8px;
   position: absolute;
-  width: 350px;
+  bottom: 60px;
+  right: 0;
+  width: 400px;
 }
 
-header {
+layer {
   height: 100px;
-  top: 0;
-  left: 0;
+  
 }
-header h1 {
+layer h2 {
   color: #E44E49;
   font-size: 30px;
   margin: 0;
   text-align: center;
 }
-aside {
+menu {
+  background: grey;
   height: 100%;
   overflow: auto;
   top: 0;
-  right: 0;
+  left: 0;
 }
 
 /* search */
@@ -101,7 +103,7 @@ aside {
   width: 250px;
 }
 
-.info-window-header {
+.info-window-layer {
   font-weight: bold;
 }
 
@@ -117,7 +119,7 @@ aside {
     height: 60%;
     bottom: 0;
   }
-  .mobile-container {
+  .mobile {
     box-shadow: 1px 1px 2px rgba(0,0,0,0.5);
     background: green;
     position: fixed;
@@ -127,7 +129,7 @@ aside {
     top: 0;
     left: 0;
   }
-  header {
+  layer {
     background: black;
     position: static;
     height: 40%;
@@ -135,7 +137,7 @@ aside {
     top: 0;
     width: 100%;
   }
-  aside {
+  menu {
     height: 60%;
     position: static;
     left: 0;
@@ -145,7 +147,7 @@ aside {
 }
 
 @media only screen and (max-height: 600px) {
-  header h1,
+  layer h1,
   #search-summary {
     display: none;
   }

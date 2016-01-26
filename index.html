@@ -4,7 +4,6 @@
   <title>Avalon Lakes</title>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <!-- <link rel="icon" type="image/png" href="img/logo.png" /> -->
   <link rel="stylesheet" href="css/bootstrap.min.css" />
   <link rel="stylesheet" href="css/app.css" />
   <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDx70byJ-7C7hGNXA1PcFzBM-R3vGrnfJk&libraries=places"></script>
@@ -12,9 +11,23 @@
 <body>
   <div class="cover">
     <div id="mapping"></div>
-    <div class="mobile-container">
-      <header>
-        <h1>Avalon Lakes</h1>
+    <div class="mobile">
+
+      <menu>
+        <ul data-bind="foreach: {data: filteredCornerList, as: 'corner'}" id="list">
+          <li data-bind="click: $root.selectCorner" class="corner-info">
+            <span class="corner-name" data-bind="text: corner.name"></span>
+            <div class="meetup-info">
+              <span data-bind="text: corner.meetups().length"></span>
+              <img class="meetup-icon" src="img/meetup.png" />
+            </div>
+          </li>
+        </ul>
+      </menu>
+
+    </div>
+    <layer>
+      <h2>Avalon Lakes</h2>
         <form id="search-form" data-bind="submit: search">
           <input id="search-input" data-bind="value: query" placeholder="Search..." autofocus />
           <button id="search-btn" type="submit">
@@ -25,20 +38,11 @@
             avalon
           </p>
         </form>
-      </header>
-      <aside>
-        <ul data-bind="foreach: {data: filteredCornerList, as: 'corner'}" id="list">
-          <li data-bind="click: $root.selectCorner" class="corner-info">
-            <span class="corner-name" data-bind="text: corner.name"></span>
-            <div class="meetup-info">
-              <span data-bind="text: corner.meetups().length"></span>
-              <img class="meetup-icon" src="img/meetup.png" />
-            </div>
-          </li>
-        </ul>
-      </aside>
-    </div>
+       
+      </>
+
   </div>
+
   <script src="js/jquery-2.2.0.min.js"></script>
   <script src="js/bootstrap.min.js"></script>
   <script src="js/knockout-3.4.0.js"></script>
