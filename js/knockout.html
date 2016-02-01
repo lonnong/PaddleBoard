@@ -1,0 +1,30 @@
+<html>
+	
+	<script src='knockout-3.4.0.js'></script>
+	<script src="jquery-2.2.0.min.js"></script>
+	<script src='knockout.js'></script>
+	
+	<!-- <div> -->
+		<!-- You've Clicked <span data-bind='text: numberOfClicks'>&nbsp;</span> -->
+	<!-- </div> -->
+	<!-- <p>GIVE ME A NAME<input data-bind='value: gene' /></p> -->
+	<!-- <div> -->
+		<!-- Make Gene Smile <span data-bind='text: gene'>&nbsp;</span> -->
+	<!-- </div> -->
+	<!-- <button data-bind='click: registerClick, disable: hasClickedTooManyTimes'>Click me</button> -->
+	<!-- <button data-bind='click: masterBlaster, disable: hasClickedTooManyTimes'>Smack me</button> -->
+	<!-- <div data-bind='visible: hasClickedTooManyTimes'> -->
+		<!-- That be too many Clicks -->
+		<!-- <button data-bind='click: resetClicks'>Reset Clicks</button> -->
+	<!-- </div> -->
+	<div>
+		<form data-bind="submit: addItem">
+		New Item:
+		<input data-bind='value: itemToAdd, valueUpdate: "afterkeydown"' />
+		<button type="submit" data-bind="enable: itemToAdd().length > 0">Add</button>
+		<p>Your Item</p>
+		<select multiple="multiple" width="50" data-bind="options: items"></select>
+		</form>
+	</div>
+
+</html>

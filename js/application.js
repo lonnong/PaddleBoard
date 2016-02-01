@@ -1,24 +1,15 @@
-// signed url from meetup api, taken from https://secure.meetup.com/meetup_api/console/?path=/2/open_events
-var meetupApiUrl = 'http://api.meetup.com/2/open_events?status=upcoming&radius=5&category=34&and_text=False&limited_events=False&text=coding+programming+ruby+python+javascript+html&desc=False&offset=0&photo-host=public&format=json&lat=41.878114&page=100&lon=-87.629798&sig_id=178346822&sig=1a186723262b63d4b2deee474b8d95bc0ec2ec9f';
 
-/* Capitalizes first letter of each word if sentence is longer than 10 characters */
-String.prototype.titleize = function() {
-  var words = this.split(' ');
-  var array = [];
-  var firstLetter, remainder;
-  for (var i=0; i<words.length; ++i) {
-    firstLetter = words[i].charAt(0).toUpperCase();
-    if (this == this.toUpperCase() && this.length > 10) {
-      remainder = words[i].toLowerCase().slice(1);
-    } else {
-      remainder = words[i].slice(1);
-    }
-    array.push(firstLetter + remainder);
-  }
-  return array.join(' ');
-};
 
-/* Checks if a substring `other` is found inside the string */
+
+var meetupApiUrl = 'https://api.meetup.com/2/events?status=upcoming&text\
+=coding+programming+ruby+python+html&desc=False&offset=0&photo-host=public&format=json&lat=28.5&page=100\
+&lon=-81.97&key=6e4d7a3d216064112676735b781f3557&group_urlname=paddleboardorlando&sign=true'
+
+// console.log(meetupApiUrl);
+
+
+
+ // Checks if a substring `other` is found inside the string
 String.prototype.contains = function(other) {
   return this.indexOf(other) !== -1;
 };
@@ -105,7 +96,10 @@ var Meetup = function(meetup) {
   });
 
   self.id = ko.observable(meetup.id);
-  self.name = ko.observable(meetup.name.titleize());
+  console.log("gene be loox")
+  console.log(self.id);
+  // self.name = ko.observable(meetup.name.titleize());
+  self.name = ko.observable(meetup.name);
   self.group = ko.observable(meetup.group.name);
 
   // converts date in milliseconds to a human-friendly string, e.g. 1/2/2015
@@ -227,7 +221,7 @@ var AppViewModel = function() {
   // initialize defaults
   var map,
       mapCanvas = $('#mapping')[0],
-      center = new google.maps.LatLng(41.8886, -87.6310); // Chicago
+      center = new google.maps.LatLng(28.54, -81.37); // Orlando
 
   // google map marker tooltip
   var infoWindow = new google.maps.InfoWindow();
@@ -263,10 +257,12 @@ var AppViewModel = function() {
     var results = ko.utils.arrayFilter(self.cornerList(), function(corner) {
       return corner.name().toLowerCase().contains(self.query().toLowerCase());
     });
+    // console.log(results);
 
     // go through results and set marker to visible
     results.forEach(function(corner) {
       corner.marker.setMap(map);
+      // console.log(corner);
     });
 
     // update the number of corners (couldn't get `ko.computed` to work)
@@ -313,13 +309,18 @@ var AppViewModel = function() {
 
     // when done
     }).done(function(response) {
+      console.log("Raw API data dump")
+      console.log(response);
       // pull `results` array from JSON
       data = response.results;
 
       // loop through results and populate `meetupList`
       data.forEach(function(meetup) {
+        console.log("looping threw meetup info");
+        console.log(meetup);
         self.meetupList.push(new Meetup(meetup));
       });
+      
 
       // run the `extractCorners` function to pull location data
       extractCorners();
