@@ -1,13 +1,13 @@
 /* border-sizing */
 html {
-  box-sizing: border-box;
+  /*box-sizing: border-box;*/
 }
 *, *:before, *:after {
-  box-sizing: inherit;
+  /*box-sizing: inherit;*/
 }
 
 /* common elements */
-html, body, .cover {
+html, body , .cover{
   height: 100%;
   margin: 0;
   width: 100%;
@@ -15,8 +15,8 @@ html, body, .cover {
 
 /* side bar */
 layer, menu {
-  background: blue;
-  color: white;
+  background: maroon;
+  color: maroon;
   margin: 0;
   padding: 8px;
   position: absolute;
@@ -25,18 +25,16 @@ layer, menu {
   width: 400px;
 }
 
-layer {
-  height: 100px;
-  
-}
+
 layer h2 {
-  color: #E44E49;
-  font-size: 30px;
+  color: gold;
+  font-size: 36px;
   margin: 0;
   text-align: center;
+ 
 }
 menu {
-  background: grey;
+  background: gold;
   height: 100%;
   overflow: auto;
   top: 0;
@@ -45,26 +43,22 @@ menu {
 
 /* search */
 #search-form {
-  color: red;
+  color: gold;
   padding: 12px;
   text-align: center;
   width: 100%;
 }
 #search-input {
-  width: 320px;
+  width: 200px;
 }
-#search-summary {
-  display: block;
-  color: white;
-  margin: 8px;
-}
+
 /* list */
 #list {
   padding: 0;
 }
 
 #list li {
-  font-size: 24px;
+  font-size: 36px;
   list-style-type: none;
   padding: 8px;
 }
@@ -75,80 +69,23 @@ menu {
   background: #E44E49;
 }
 
-.corner-name {
+#pin-name {
   display: inline-block;
   overflow: hidden;
+  width: 75%;
   text-overflow: ellipsis;
   white-space: nowrap;
-  width: 75%;
+  
 }
 
-.meetup-info {
+#meetup-info {
   float: right;
   text-align: right;
   width: 25%;
-}
-
-.meetup-icon {
-  height: 24px;
 }
 
 /* mappings */
 #mapping {
   height: 100%;
   width: 100%;
-}
-
-.info-window-content {
-  width: 250px;
-}
-
-.info-window-layer {
-  font-weight: bold;
-}
-
-.info-window-list {
-  padding-left: 20px;
-}
-
-/* info window */
-@media only screen and (max-width: 700px) {
-  #mapping, .cover {
-    position: absolute;
-    left: 0;
-    height: 60%;
-    bottom: 0;
-  }
-  .mobile {
-    box-shadow: 1px 1px 2px rgba(0,0,0,0.5);
-    background: green;
-    position: fixed;
-    height: 40%;
-    width: 100%;
-    overflow: hidden;
-    top: 0;
-    left: 0;
-  }
-  layer {
-    background: black;
-    position: static;
-    height: 40%;
-    left: 0;
-    top: 0;
-    width: 100%;
-  }
-  menu {
-    height: 60%;
-    position: static;
-    left: 0;
-    top: 100px;
-    width: 100%;
-  }
-}
-
-@media only screen and (max-height: 600px) {
-  layer h1,
-  #search-summary {
-    display: none;
-  }
 }

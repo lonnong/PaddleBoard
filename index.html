@@ -1,57 +1,37 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Avalon Lakes</title>
+  <title>Orlando PaddleBoards</title>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <link rel="stylesheet" href="css/bootstrap.min.css" />
   <link rel="stylesheet" href="css/app.css" />
-  <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDx70byJ-7C7hGNXA1PcFzBM-R3vGrnfJk&libraries=places"></script>
+ // <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDx70byJ-7C7hGNXA1PcFzBM-R3vGrnfJk&libraries=places"></script>
 </head>
 <body>
   <div class="cover">
     <div id="mapping"></div>
-    <div class="mobile">
-
       <menu>
-        <ul data-bind="foreach: {data: filteredCornerList, as: 'corner'}" id="list">
-          <li data-bind="click: $root.selectCorner" class="corner-info">
-            <span class="corner-name" data-bind="text: corner.name"></span>
-            <div class="meetup-info">
-              <span data-bind="text: corner.meetups().length"></span>
-              <img class="meetup-icon" src="img/meetup.png" />
-            </div>
+        <ul data-bind="foreach: {data: filteredFastnerList, as: 'pin'}" id="list">
+          <li data-bind="click: $root.selectFastner" class="pin-info">
+            <span id="pin-name" data-bind="text: pin.name"></span>
+            <div id="meetup-info"></div>
           </li>
         </ul>
+        <layer>
+          <h2>Orlando PaddleBoards</h2>
+            <form id="search-form" data-bind="submit: search">
+               <input id="search-input" data-bind="value: query" placeholder="PaddleBoard Filter" autofocus />
+               <button type="submit">Search</button>
+            </form>    
+          </h2>
+        </layer>
       </menu>
-
     </div>
-    <layer>
-      <h2>Avalon Lakes</h2>
-        <form id="search-form" data-bind="submit: search">
-          <input id="search-input" data-bind="value: query" placeholder="Search..." autofocus />
-          <button id="search-btn" type="submit">
-            <!-- <span class="glyphicon glyphicon-search"></span> -->
-          </button>
-          <p id="search-summary">
-            <span data-bind="text: numCorners"></span>
-            avalon
-          </p>
-        </form>
-       
-      </>
-
   </div>
-
   <script src="js/jquery-2.2.0.min.js"></script>
   <script src="js/bootstrap.min.js"></script>
   <script src="js/knockout-3.4.0.js"></script>
   <script src="js/application.js"></script>
-  <script>
-    $(window).resize(function () {
-      var h = $('.wrapper').height();
-      $('#mapping').css('height', h);
-    }).resize();
-  </script>
 </body>
 </html>

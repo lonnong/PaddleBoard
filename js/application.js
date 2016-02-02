@@ -1,27 +1,20 @@
-
-
-
+// Calls the Paddle Board Meetup group in Orlando
 var meetupApiUrl = 'https://api.meetup.com/2/events?status=upcoming&text\
 =coding+programming+ruby+python+html&desc=False&offset=0&photo-host=public&format=json&lat=28.5&page=100\
 &lon=-81.97&key=6e4d7a3d216064112676735b781f3557&group_urlname=paddleboardorlando&sign=true'
-
 // console.log(meetupApiUrl);
-
-
 
  // Checks if a substring `other` is found inside the string
 String.prototype.contains = function(other) {
   return this.indexOf(other) !== -1;
 };
 
-/* Represents a coding "corner", or a geographical place or venue.
- * @constructor
- * @param {object} venueObject - JSON-like venue from the Meetup open_venue API
+/* Creates a markup on the map if the meetup location has a Venue Object
  */
-var Corner = function(venueObject, map) {
+var Fastner = function(venueObject, map) {
   var self = this;
 
-  // load and check for latitude/longitude and set to `location`
+  // Set latitude/longitude for the pin
   self.lat = venueObject.lat;
   self.lon = venueObject.lon;
   self.location = ko.computed(function() {
@@ -36,35 +29,29 @@ var Corner = function(venueObject, map) {
 
   // load metadata
   self.id = venueObject.id;
-  // self.name = ko.observable(venueObject.name.titleize());
   self.name = ko.observable(venueObject.name);
   self.address = ko.observable(venueObject.address_1);
-
-  // initialize empty meetup
   self.meetups = ko.observableArray([]);
 
   // initialize marker
-  self.marker = (function(corner) {
+  self.marker = (function(pin) {
     var marker;
 
-    // validate that the corner has a location (see `Corner` model for pseudo-validation)
-    if (corner.location()) {
+    // validate that the pin has a location (see `Fastner` model)
+    if (pin.location()) {
       marker = new google.maps.Marker({
-        position: corner.location(),
+        position: pin.location(),
         map: map,
       });
-    }
-
-    // return the marker object
-    return marker;
+    } return marker;
   })(self);
 
-  // returns the formatted HTML for a corner's upcoming open meetups
+  // returns HTML for a pin's meetups
   self.formattedMeetupList = function() {
     meetupSubstring = '<ul class="info-window-list">';
     self.meetups().forEach(function(meetup) {
       meetupSubstring += '<li>' + '<a href="' + meetup.url() + '">' +
-                           meetup.name() +
+                           meetup.name() + 
                          '</a>' + ' on ' + meetup.date() + '</li>';
     });
     meetupSubstring += '</ul>';
@@ -102,7 +89,7 @@ var Meetup = function(meetup) {
   self.name = ko.observable(meetup.name);
   self.group = ko.observable(meetup.group.name);
 
-  // converts date in milliseconds to a human-friendly string, e.g. 1/2/2015
+  // converts date from milliseconds
   self.date = ko.computed(function() {
     var milliseconds = meetup.time;
     var date = new Date(milliseconds);
@@ -115,62 +102,9 @@ var Meetup = function(meetup) {
 var GoogleMap = function(center, element) {
   var self = this;
 
-  // styling elements from http://stackoverflow.com/questions/6588549/make-google-maps-plugin-black-white-or-with-sepia-filter
+  // styling elements from http://stackoverflow.com/
   var roadAtlasStyles = [
-    {
-      "featureType": "road.highway",
-      "elementType": "geometry",
-      "stylers": [
-        { "saturation": -100 },
-        { "lightness": -8 },
-        { "gamma": 1.18 }
-      ]
-    }, {
-      "featureType": "road.arterial",
-      "elementType": "geometry",
-      "stylers": [
-        { "saturation": -100 },
-        { "gamma": 1 },
-        { "lightness": -24 }
-      ]
-    }, {
-      "featureType": "poi",
-      "elementType": "geometry",
-      "stylers": [
-        { "saturation": -100 }
-      ]
-    }, {
-      "featureType": "administrative",
-      "stylers": [
-        { "saturation": -100 }
-      ]
-    }, {
-      "featureType": "transit",
-      "stylers": [
-        { "saturation": -100 }
-      ]
-    }, {
-      "featureType": "water",
-      "elementType": "geometry.fill",
-      "stylers": [
-        { "saturation": -100 }
-      ]
-    }, {
-      "featureType": "road",
-      "stylers": [
-        { "color": '#D0B2B2' },
-      ]
-    }, {
-      "featureType": "administrative",
-      "stylers": [
-        { "saturation": -100 }
-      ]
-    }, {
-      "featureType": "landscape",
-      "stylers": [
-        { "saturation": -100 }
-      ]
-    }, {
+    {  
       "featureType": "poi",
       "stylers": [
         { "saturation": -100 }
@@ -179,7 +113,7 @@ var GoogleMap = function(center, element) {
   ];
 
   var mapOptions = {
-    zoom: 14,
+    zoom: 10,
     center: center,
     mapTypeControlOptions: {
       mapTypeIds: [google.maps.MapTypeId.ROADMAP, 'usroadatlas']
@@ -210,10 +144,10 @@ var AppViewModel = function() {
 
   function initialize() {
     map = GoogleMap(center, mapCanvas);
-    fetchMeetups(meetupApiUrl);
+    getMeetups(meetupApiUrl);
   }
 
-  // check that Google Maps loaded
+  // Found Google Map
   if (typeof google !== 'object' || typeof google.maps !== 'object') {
     $('#search-summary').text("Could not load Google Maps API");
   }
@@ -222,87 +156,71 @@ var AppViewModel = function() {
   var map,
       mapCanvas = $('#mapping')[0],
       center = new google.maps.LatLng(28.54, -81.37); // Orlando
-
-  // google map marker tooltip
   var infoWindow = new google.maps.InfoWindow();
-
-  // list of meetups, not currently used in view
   self.meetupList = ko.observableArray([]);
-
-  // list of corners, bound to `#list`
-  self.cornerList = ko.observableArray([]);
-
-  // number of corners, bound to `#search-summary p`
-  self.numCorners = ko.observable(0);
-
-  /* SEARCH */
-
-  // search query, bound to `#search-input` search box
+  self.pinList = ko.observableArray([]);
+  self.numFastners = ko.observable(0);
   self.query = ko.observable('');
-
-  // bound to `#search-btn`
-  /* Search function. */
   self.search = function() {
-    // empty function for future functionality, keep present to avoid page reload
   };
 
-  // returns a filtered list of corners if name contains `self.query` data
-  self.filteredCornerList = ko.computed(function() {
-    // loop through corners and clear map markers
-    self.cornerList().forEach(function(corner) {
-      corner.marker.setMap(null);
+  // returns a filtered list of pins if name contains `self.query` data
+  self.filteredFastnerList = ko.computed(function() {
+    // Initialize map markers
+    self.pinList().forEach(function(pin) {
+      pin.marker.setMap(null);
     });
 
     // filter results where name contains `self.query`
-    var results = ko.utils.arrayFilter(self.cornerList(), function(corner) {
-      return corner.name().toLowerCase().contains(self.query().toLowerCase());
+    var results = ko.utils.arrayFilter(self.pinList(), function(pin) {
+      return pin.name().toLowerCase().contains(self.query().toLowerCase());
     });
     // console.log(results);
 
     // go through results and set marker to visible
-    results.forEach(function(corner) {
-      corner.marker.setMap(map);
-      // console.log(corner);
+    results.forEach(function(pin) {
+      pin.marker.setMap(map);
+      // console.log(pin);
     });
 
-    // update the number of corners (couldn't get `ko.computed` to work)
-    self.numCorners(results.length);
+    // update the number of pins (couldn't get `ko.computed` to work)
+    self.numFastners(results.length);
     return results;
   });
 
-  // triggered when a corner in `#list` is clicked or a marker is clicked
+  // triggered when a pin in `#list` is clicked or a marker is clicked
   /* Fetches from marker/infowindow data and animate markers
-   * @param {object} corner - Corner instance
+   * @param {object} pin - Fastner instance
    */
-  self.selectCorner = function(corner) {
-    // fetch and set html to info window content
-    infoWindow.setContent(corner.formattedMeetupList());
+  self.selectFastner = function(pin) {
+    // get and set html to info window content
+    infoWindow.setContent(pin.formattedMeetupList());
 
-    // open up the appropriate info window at the selected corner's marker
-    infoWindow.open(map, corner.marker);
+    // open up the appropriate info window at the selected pin's marker
+    infoWindow.open(map, pin.marker);
 
     // scroll the map to the marker's position
-    map.panTo(corner.marker.position);
+    map.panTo(pin.marker.position);
 
     // animate markers
-    corner.marker.setAnimation(google.maps.Animation.BOUNCE);
-    self.cornerList().forEach(function(old_corner) {
-      if (corner != old_corner) {
-        old_corner.marker.setAnimation(null);
+    pin.marker.setAnimation(google.maps.Animation.BOUNCE);
+    self.pinList().forEach(function(old_pin) {
+      if (pin != old_pin) {
+        old_pin.marker.setAnimation(null);
       }
     });
   };
 
   /* Fetches meetups via JSON-P from Meetup API
    * @params {string} url - Meetup API URL */
-  function fetchMeetups(url) {
+  function getMeetups(url) {
     var data;
 
     // execute JSON-P request
     $.ajax({
       type: "GET",
       url: url,
-      timeout: 5000,
+      timeout: 8000,
       contentType: "application/json",
       dataType: "jsonp",
       cache: false,
@@ -322,8 +240,8 @@ var AppViewModel = function() {
       });
       
 
-      // run the `extractCorners` function to pull location data
-      extractCorners();
+      // run the `extractFastners` function to pull location data
+      extractFastners();
 
     // if failed
     }).fail(function(response, status, error) {
@@ -331,75 +249,73 @@ var AppViewModel = function() {
     });
   }
 
-  /* Parses through the meetupList and extracts Corner objects */
-  function extractCorners() {
-    // loop through meetup list
+  
+
+  /* Fetches a pin from `pinList` by `id`
+   * @param {int} id - id number
+   */
+  function getFastnerById(id) {
+    var foundFastner = null;
+    if (hasFastnerId(id)) {
+      self.pinList().forEach(function(pin) {
+        if (pin.id.toString() === id.toString()) {
+          foundFastner = pin;
+        }
+      });
+    }
+    return foundFastner;
+  }
+
+  /* Checks if a specific pin by `id` already exists in `pinList`
+   * @param {int} id - id number
+   */
+  function hasFastnerId(id) {
+    var result = false;
+    self.pinList().forEach(function(pin) {
+      if (pin.id.toString() === id.toString()) {
+        result = true;
+      }
+    });
+    return result;
+  }
+/* Get all meetup locations and place in Fastner objects */
+  function extractFastners() {
     self.meetupList().forEach(function(meetup){
-      // check if meetup object has a valid venue id
+      // Need a venue id to pull location
       if (meetup.hasVenue()) {
-        var corner;
+        var pin;
         var id = meetup.venueObject.id;
-
-        // if exists
-        if (hasCornerId(id)) {
-          // push the meetup object onto the corner's meetups
-          corner = getCornerById(id);
-          corner.meetups.push(meetup);
-
-        // if does not exist
+        if (hasFastnerId(id)) {
+          // push the meetup object onto the pin's meetups
+          pin = getFastnerById(id);
+          pin.meetups.push(meetup);
         } else {
-          // instantiate a new corner object
-          corner = new Corner(meetup.venueObject, map);
+          // instantiate a new pin object
+          pin = new Fastner(meetup.venueObject, map);
 
           // check if has valid location
-          if (corner.location()) {
-            // push it to the corner list
-            self.cornerList.push(corner);
+          if (pin.location()) {
+            // push it to the pin list
+            self.pinList.push(pin);
 
-            // and push the meetup object onto that new corner object
-            corner.meetups.push(meetup);
+            // and push the meetup object onto that new pin object
+            pin.meetups.push(meetup);
 
             // add a marker callback
-            google.maps.event.addListener(corner.marker, 'click', function () {
-              self.selectCorner(corner);
+            google.maps.event.addListener(pin.marker, 'click', function () {
+              self.selectFastner(pin);
             });
           }
         }
       }
     });
   }
-
-  /* Checks if a specific corner by `id` already exists in `cornerList`
-   * @param {int} id - id number
-   */
-  function hasCornerId(id) {
-    var result = false;
-    self.cornerList().forEach(function(corner) {
-      if (corner.id.toString() === id.toString()) {
-        result = true;
-      }
-    });
-    return result;
-  }
-
-  /* Fetches a corner from `cornerList` by `id`
-   * @param {int} id - id number
-   */
-  // TODO: check if they have the same lat/lon--but how to handle multiple floors?
-  function getCornerById(id) {
-    var foundCorner = null;
-    if (hasCornerId(id)) {
-      self.cornerList().forEach(function(corner) {
-        if (corner.id.toString() === id.toString()) {
-          foundCorner = corner;
-        }
-      });
-    }
-    return foundCorner;
-  }
+  
 
   // initialization listener
   google.maps.event.addDomListener(window, 'load', initialize);
 };
 
-ko.applyBindings(new AppViewModel());
+$(document).ready(function(){
+   ko.applyBindings(new AppViewModel());
+  });
