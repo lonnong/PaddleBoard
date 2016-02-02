@@ -44,7 +44,7 @@ menu {
 }
 #list li:hover {
   cursor: pointer;
-  color: maroon;
+  color: gold;
   background: maroon;
 }
 #pin-name {
