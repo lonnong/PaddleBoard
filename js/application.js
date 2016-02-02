@@ -2,18 +2,11 @@
 var meetupApiUrl = 'https://api.meetup.com/2/events?status=upcoming&text\
 =coding+programming+ruby+python+html&desc=False&offset=0&photo-host=public&format=json&lat=28.5&page=100\
 &lon=-81.97&key=6e4d7a3d216064112676735b781f3557&group_urlname=paddleboardorlando&sign=true'
-// console.log(meetupApiUrl);
 
- // Checks if a substring `other` is found inside the string
-String.prototype.contains = function(other) {
-  return this.indexOf(other) !== -1;
-};
+// Creates a markup on the map if the meetup location has a Venue Object
 
-/* Creates a markup on the map if the meetup location has a Venue Object
- */
 var Fastner = function(venueObject, map) {
   var self = this;
-
   // Set latitude/longitude for the pin
   self.lat = venueObject.lat;
   self.lon = venueObject.lon;
@@ -26,13 +19,11 @@ var Fastner = function(venueObject, map) {
       return new google.maps.LatLng(self.lat, self.lon);
     }
   });
-
   // load metadata
   self.id = venueObject.id;
   self.name = ko.observable(venueObject.name);
   self.address = ko.observable(venueObject.address_1);
   self.meetups = ko.observableArray([]);
-
   // initialize marker
   self.marker = (function(pin) {
     var marker;
@@ -47,32 +38,23 @@ var Fastner = function(venueObject, map) {
   })(self);
 
   // returns HTML for a pin's meetups
-  self.formattedMeetupList = function() {
+  self.htmlMeetupList = function() {
     meetupSubstring = '<ul>';
     self.meetups().forEach(function(meetup) {
-      meetupSubstring += '<li>' + '<a href="' + meetup.url() + '">' +
-                           meetup.name() + 
-                         '</a>' + ' on ' + meetup.date() + '</li>';
+      meetupSubstring += '<li>' + '<a href="' + meetup.url() + '">' + meetup.name() + '</a>' + ' on ' + meetup.date() + '</li>';
     });
     meetupSubstring += '</ul>';
-    return '<div>' +
-              '<span>' + self.name() + '</span>' +
-              '<p>' + self.address() + '</p>' +
-              meetupSubstring +
-              '</div>';
+    return '<div>' + '<span>' + self.name() + '</span>' + '<p>' + self.address() + '</p>' + meetupSubstring + '</div>';
   };
 };
-
 /* Represents a Meetup event.
  * @constructor
  * @param {object} meetup - JSON-like meetup from the Meetup open_venue API
  */
 var Meetup = function(meetup) {
   var self = this;
-
   // attach venue object
   self.venueObject = meetup.venue;
-
   // returns if the meetup has a venue that is listed
   self.hasVenue = ko.computed(function() {
     if (self.venueObject) {
@@ -81,10 +63,8 @@ var Meetup = function(meetup) {
       return false;
     }
   });
-
   self.id = ko.observable(meetup.id);
-  console.log("gene be loox")
-  console.log(self.id);
+  
   // self.name = ko.observable(meetup.name.titleize());
   self.name = ko.observable(meetup.name);
   self.group = ko.observable(meetup.group.name);
@@ -97,21 +77,9 @@ var Meetup = function(meetup) {
   });
   self.url = ko.observable(meetup.event_url);
 };
-
 /* Represents a Google Map object */
 var GoogleMap = function(center, element) {
-  var self = this;
-
-  // styling elements from http://stackoverflow.com/
-  var roadAtlasStyles = [
-    {  
-      "featureType": "poi",
-      "stylers": [
-        { "saturation": -100 }
-      ]
-    }
-  ];
-
+  // Sets GOOGLE map type
   var mapOptions = {
     zoom: 10,
     center: center,
@@ -122,27 +90,25 @@ var GoogleMap = function(center, element) {
     streetViewControl: false,
     zoomControl: false
   };
-
-  // assign a google maps element
+  // Create a google maps element
   map = new google.maps.Map(element, mapOptions);
   map.setMapTypeId(google.maps.MapTypeId.ROADMAP);
   return map;
 };
 
-/* Main application view model */
-var AppViewModel = function() {
+
+/* Main model */
+var AppModel = function() {
   var self = this;
 
   function initialize() {
     map = GoogleMap(center, mapCanvas);
     getMeetups(meetupApiUrl);
   }
-
   // Found Google Map
   if (typeof google !== 'object' || typeof google.maps !== 'object') {
     $('#search-summary').text("Could not load Google Map");
   }
-
   // initialize defaults
   var map,
       mapCanvas = $('#mapping')[0],
@@ -154,45 +120,37 @@ var AppViewModel = function() {
   self.query = ko.observable('');
   self.search = function() {
   };
-
   // returns a filtered list of pins if name contains `self.query` data
   self.filteredFastnerList = ko.computed(function() {
     // Initialize map markers
     self.pinList().forEach(function(pin) {
       pin.marker.setMap(null);
     });
-
+    // Checks if a substring `other` is found inside the string
+    String.prototype.contains = function(other) {
+      return this.indexOf(other) !== -1;
+    };
     // filter results where name contains `self.query`
     var results = ko.utils.arrayFilter(self.pinList(), function(pin) {
-      return pin.name().toLowerCase().contains(self.query().toLowerCase());
+      return pin.name().toUpperCase().contains(self.query().toUpperCase());
     });
-    // console.log(results);
-
     // go through results and set marker to visible
     results.forEach(function(pin) {
       pin.marker.setMap(map);
-      // console.log(pin);
     });
-
-    // update the number of pins (couldn't get `ko.computed` to work)
-    self.numFastners(results.length);
     return results;
   });
-
   // triggered when a pin in `#list` is clicked or a marker is clicked
   /* Fetches from marker/infowindow data and animate markers
    * @param {object} pin - Fastner instance
    */
   self.selectFastner = function(pin) {
     // get and set html to info window content
-    infoWindow.setContent(pin.formattedMeetupList());
-
+    infoWindow.setContent(pin.htmlMeetupList());
     // open up the appropriate info window at the selected pin's marker
     infoWindow.open(map, pin.marker);
-
     // scroll the map to the marker's position
     map.panTo(pin.marker.position);
-
     // animate markers
     pin.marker.setAnimation(google.maps.Animation.BOUNCE);
     self.pinList().forEach(function(old_pin) {
@@ -201,13 +159,12 @@ var AppViewModel = function() {
       }
     });
   };
-
   /* Fetches meetups via JSON-P from Meetup API
    * @params {string} url - Meetup API URL */
   function getMeetups(url) {
     var data;
 
-    // execute JSON-P request
+    // execute Ajax request
     $.ajax({
       type: "GET",
       url: url,
@@ -215,33 +172,20 @@ var AppViewModel = function() {
       contentType: "application/json",
       dataType: "jsonp",
       cache: false,
-
     // when done
     }).done(function(response) {
-      console.log("Raw API data dump")
-      console.log(response);
-      // pull `results` array from JSON
       data = response.results;
-
       // loop through results and populate `meetupList`
-      data.forEach(function(meetup) {
-        console.log("looping threw meetup info");
-        console.log(meetup);
+      data.forEach(function(meetup) { 
         self.meetupList.push(new Meetup(meetup));
       });
-      
-
       // run the `extractFastners` function to pull location data
       extractFastners();
-
-    // if failed
+    // if Error
     }).fail(function(response, status, error) {
       $('#search-summary').text('Meetup data could not load...');
     });
   }
-
-  
-
   /* Fetches a pin from `pinList` by `id`
    * @param {int} id - id number
    */
@@ -256,7 +200,6 @@ var AppViewModel = function() {
     }
     return foundFastner;
   }
-
   /* Checks if a specific pin by `id` already exists in `pinList`
    * @param {int} id - id number
    */
@@ -301,12 +244,9 @@ var AppViewModel = function() {
       }
     });
   }
-  
-
   // initialization listener
   google.maps.event.addDomListener(window, 'load', initialize);
 };
-
 $(document).ready(function(){
-   ko.applyBindings(new AppViewModel());
+   ko.applyBindings(new AppModel());
   });
