@@ -1,37 +1,22 @@
-/* border-sizing */
-html {
-  /*box-sizing: border-box;*/
-}
-*, *:before, *:after {
-  /*box-sizing: inherit;*/
-}
-
-/* common elements */
 html, body , .cover{
   height: 100%;
   margin: 0;
   width: 100%;
 }
-
-/* side bar */
 layer, menu {
-  background: maroon;
+  /*background: maroon;*/
   color: maroon;
-  margin: 0;
-  padding: 8px;
+  padding: 20px;
   position: absolute;
-  bottom: 60px;
+  bottom: 15px;
   right: 0;
-  width: 400px;
+  width: 280px;
 }
-
-
 layer h2 {
   color: gold;
-  font-size: 36px;
+  font-size: 12px;
   margin: 0;
   text-align: center;
- 
 }
 menu {
   background: gold;
@@ -40,10 +25,8 @@ menu {
   top: 0;
   left: 0;
 }
-
-/* search */
 #search-form {
-  color: gold;
+  color: maroon;
   padding: 12px;
   text-align: center;
   width: 100%;
@@ -51,40 +34,29 @@ menu {
 #search-input {
   width: 200px;
 }
-
-/* list */
 #list {
   padding: 0;
 }
-
 #list li {
-  font-size: 36px;
+  font-size: 15px;
   list-style-type: none;
   padding: 8px;
 }
-
 #list li:hover {
   cursor: pointer;
-  color: black;
-  background: #E44E49;
+  color: gold;
+  background: maroon;
 }
-
 #pin-name {
   display: inline-block;
-  overflow: hidden;
-  width: 75%;
-  text-overflow: ellipsis;
+  width: 45%;
   white-space: nowrap;
-  
 }
-
 #meetup-info {
   float: right;
-  text-align: right;
+  text-align: center;
   width: 25%;
 }
-
-/* mappings */
 #mapping {
   height: 100%;
   width: 100%;

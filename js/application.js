@@ -48,15 +48,15 @@ var Fastner = function(venueObject, map) {
 
   // returns HTML for a pin's meetups
   self.formattedMeetupList = function() {
-    meetupSubstring = '<ul class="info-window-list">';
+    meetupSubstring = '<ul>';
     self.meetups().forEach(function(meetup) {
       meetupSubstring += '<li>' + '<a href="' + meetup.url() + '">' +
                            meetup.name() + 
                          '</a>' + ' on ' + meetup.date() + '</li>';
     });
     meetupSubstring += '</ul>';
-    return '<div class="info-window-content">' +
-              '<span class="info-window-header">' + self.name() + '</span>' +
+    return '<div>' +
+              '<span>' + self.name() + '</span>' +
               '<p>' + self.address() + '</p>' +
               meetupSubstring +
               '</div>';
