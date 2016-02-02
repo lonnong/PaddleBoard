@@ -115,11 +115,8 @@ var GoogleMap = function(center, element) {
   var mapOptions = {
     zoom: 10,
     center: center,
-    mapTypeControlOptions: {
-      mapTypeIds: [google.maps.MapTypeId.ROADMAP, 'usroadatlas']
-    },
-
-    // customize controls
+    mapTypeId: 'coordinate',
+    mapTypeControlOptions: {mapTypeIds: ['coordinate', google.maps.MapTypeId.ROADMAP]},
     mapTypeControl: false,
     panControl: false,
     streetViewControl: false,
@@ -128,13 +125,7 @@ var GoogleMap = function(center, element) {
 
   // assign a google maps element
   map = new google.maps.Map(element, mapOptions);
-
-  // apply custom map styling
-  var styledMapOptions = {};
-  var usRoadMapType = new google.maps.StyledMapType(roadAtlasStyles, styledMapOptions);
-  map.mapTypes.set('usroadatlas', usRoadMapType);
-  map.setMapTypeId('usroadatlas');
-
+  map.setMapTypeId(google.maps.MapTypeId.ROADMAP);
   return map;
 };
 
@@ -149,7 +140,7 @@ var AppViewModel = function() {
 
   // Found Google Map
   if (typeof google !== 'object' || typeof google.maps !== 'object') {
-    $('#search-summary').text("Could not load Google Maps API");
+    $('#search-summary').text("Could not load Google Map");
   }
 
   // initialize defaults

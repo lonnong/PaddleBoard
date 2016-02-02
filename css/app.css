@@ -4,7 +4,7 @@ html, body , .cover{
   width: 100%;
 }
 layer, menu {
-  /*background: maroon;*/
+  background: maroon;
   color: maroon;
   padding: 20px;
   position: absolute;
@@ -44,7 +44,7 @@ menu {
 }
 #list li:hover {
   cursor: pointer;
-  color: gold;
+  color: maroon;
   background: maroon;
 }
 #pin-name {
